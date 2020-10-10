@@ -5,6 +5,7 @@ module Eneroth
     Sketchup.require "#{PLUGIN_ROOT}/vendor/scale"
     Sketchup.require "#{PLUGIN_ROOT}/selection_observer_wrapper"
 
+    # User interface for setting scale for selected groups and components.
     module Frontend
       # Message for invalid selection.
       INVALID_SEL = "No groups or components selected"

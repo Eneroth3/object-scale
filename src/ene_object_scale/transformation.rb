@@ -2,6 +2,7 @@
 
 module Eneroth
   module ObjectScale
+    # Helper module to get and set transformation scales.
     module Transformation
       # Replace scaling in transformation.
       #
