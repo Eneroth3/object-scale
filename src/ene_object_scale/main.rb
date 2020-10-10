@@ -4,6 +4,59 @@ module Eneroth
   module ObjectScale
     Sketchup.require "#{PLUGIN_ROOT}/transformation"
 
+    # Get scale from selected instances.
+    #
+    # @return [Float, nil]
+    #  `nil` when instances have different scales.
+    def self.scale
+      scales = selected_instance.map do |instance|
+        Transformation.extract_scaling(instance.transformation, instance.definition.bounds)
+      end
+
+      # Convert to Length to borrow SU's precision when comparing.
+      scales = unique_values(scales) { |a, b| a.to_l == b }
+
+      scales.size == 1 ? scales.first : nil
+    end
+
+    # Set scale for selected instances.
+    #
+    # @param scale [Float]
+    def self.scale=(scale)
+      selected_instance.each do |instance|
+        instance.transformation = Transformation.apply_scaling(instance.transformation, scale)
+      end
+    end
+
+    # Get instances (groups and components) selected in the model.
+    #
+    # @return [Array<Sketchup::Group, Sketchup::ComponentInstance>]
+    def self.selected_instance
+      Sketchup.active_model.selection.select do |entity|
+        entity.is_a?(Sketchup::Group) || entity.is_a?(Sketchup::ComponentInstance)
+      end
+    end
+
+    # Create array of unique objects, using custom comparison for uniqueness.
+    #
+    # @param array [Array]
+    #
+    # @yieldparam value1 [Object]
+    # @yieldparam value2 [Object]
+    # @yieldreturn [Boolean]
+    #   Whether `value1` and `value2` are the same.
+    #
+    # @return [Array]
+    def self.unique_values(array)
+      new_array = [array.shift]
+      array.each do |value|
+        match = new_array.find { |other| yield(value, other) }
+        new_array << [value] unless match
+      end
+
+      new_array
+    end
+
     # Reload extension.
     #
     # @param clear_console [Boolean] Whether console should be cleared.
