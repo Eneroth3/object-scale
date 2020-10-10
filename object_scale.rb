@@ -23,48 +23,43 @@ def remove_scaling(transformation)
   ])
 end
 
-def scaling(transformation, bounds)
+# Extract scaling from transformation.
+#
+# For 2D objects, the scaling in the "flat" axis is ignored.
+# Native scale tool doesn't set this scaling when performing a
+# seemingly uniform scaling, so it can't be relied upon.
+#
+# @param transformation [Geom::Transformation]
+# @param bounds [Geom::BoundingBox]
+#   The bounds of the object's definition.
+#
+# @return [Float]
+def extract_scaling(transformation, bounds)
   scales = [
     Geom::Vector3d.new(transformation.to_a.values_at(0..2)).length,
     Geom::Vector3d.new(transformation.to_a.values_at(4..6)).length,
     Geom::Vector3d.new(transformation.to_a.values_at(8..10)).length
   ]
-  
-  # Native Scale tool only scale flat objects in their plane.
-  # If object is flat, ignore third axis when calculating scale.
-  # Ignore hypothetical axial objects.
-  # TODO: Can flatness be expressed as bitmask and axial objects be supported?
-  flat = zero_axis(bounds)
-  scales[flat] = 1 if flat
-  
-  # TODO: Honor last element
+  sizes = [
+    bounds.width,
+    bounds.height, # "height" = depth
+    bounds.depth # "depth" = height
+  ]
+  sizes.each_with_index { |s, i| scales[i] = 1 if s == 0 }
   product = scales.inject(:*)
-  flat ? Math.sqrt(product) : Math.cbrt(product)
-end
-
-def uniform?(transformation, bounds)
-  x_scale = Geom::Vector3d.new(transformation.to_a.values_at(0..2)).length
-  y_scale = Geom::Vector3d.new(transformation.to_a.values_at(4..6)).length
-  z_scale = Geom::Vector3d.new(transformation.to_a.values_at(8..10)).length
+  dimensions = sizes.count { |s| s != 0 }
   
-  x_scale == y_scale && x_scale == z_scale
+  scale = product
+  scale = Math.sqrt(product) if dimensions == 2
+  scale = Math.cbrt(product) if dimensions == 3
+  
+  # The bottom right value of matrix can be used for scaling in SU.
+  # Native scale tool doesn't set this value, but the API can set it.
+  scale / transformation.to_a[15]
 end
 
-# Get index to the bounds is flat in, if any.
-#
-# @param bounds [Geom::BoundingBox]
-#
-# @return [Integer, nil]
-#   0 = x, 1 = y, 2 = z, nil = bounds is not flat.
-def zero_axis(bounds)
-  if bounds.width == 0
-    0
-  elsif bounds.height == 0 # "height" = depth (Y)
-    1
-  elsif bounds.depth == 0 # "depth" = height (z)
-    2
-  end
-end
 
-entity = Sketchup.active_model.selection.first
-entity.transformation = apply_scaling(entity.transformation, 2)
+
+def selected; Sketchup.active_model.selection.first end
+selected.transformation = apply_scaling(selected.transformation, 2)
+extract_scaling(selected.transformation, selected.definition.bounds)
