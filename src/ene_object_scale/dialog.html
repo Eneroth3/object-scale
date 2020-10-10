@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>TITLE</title>
+    <script src="vendor/dialogs/jquery-1.12.4.js"></script>
+    <script src="vendor/dialogs/controls.js"></script>
+    <link rel="stylesheet" type="text/css" href="vendor/dialogs/style.css">
+    <script>
+      var loaded = false;
+
+      // Disable context menu.
+      // TODO: Disable context menu
+      //window.oncontextmenu = function (e) { e.preventDefault() };
+      
+      window.onerror = function(message, source, lineno, colno, error) {
+        alert("source:" + lineno + ":" + colno + "\n\n" + message);
+      }
+
+      var scaleField;
+
+      function updateFields(scale) {
+        if (!loaded) return;
+
+        scaleField.value = scale;
+
+        markAsValid(scaleField);
+
+        document.getElementsByTagName('table')[0].style.display = '';
+        document.getElementById('message').style.display = 'none';
+      }
+
+      function displayMessage(message) {
+        document.getElementsByTagName('table')[0].style.display = 'none';
+        document.getElementById('message').style.display = '';
+        document.getElementById('message').innerHTML = message;
+      }
+
+      function markAsInvalid(field) {
+        field.classList.add("invalid");
+      }
+
+      function markAsValid(field) {
+        field.classList.remove("invalid");
+      }
+
+      window.onload = function() {
+        scaleField = document.getElementById('scale');
+
+        scaleField.onchange = scaleField.onkeyup = onWrite;
+
+        loaded = true;
+
+        sketchup.ready();
+      };
+
+      function onWrite(event) {
+        sketchup.onChange(scaleField.value);
+      }
+    </script>
+    <style>
+      table {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        table-layout: fixed;
+      }
+      td {
+        padding: 2px;
+      }
+      tr td:first-child {
+        text-align: right;
+        width: 33%;
+      }
+      input[type=text], button {
+        width: 100%;
+        margin: 0;
+      }
+      .invalid {
+        border-color: #DF191B !important;
+      }
+      #message {
+        font-style: italic;
+        opacity: 0.6;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dlg-content-area">
+      <table style="display: none;">
+        <tr title="E.g. 1:87.">
+          <td><label for="scale">Scale</label></td>
+          <td><input id="scale" type="text" /></td>
+        </tr>
+      </table>
+      <div id="message" style="display: none;"></div>
+    </div>
+  </body>
+</html>

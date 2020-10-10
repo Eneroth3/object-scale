@@ -1,6 +1,8 @@
 require: rubocop-sketchup
 
 AllCops:
+  Exclude:
+    - 'src/*/vendor/**/*'
   DisplayCopNames: true
   # Should really be Ruby 2.2.4 for SketchUp 2017 but Rubocop has dropped that
   # option.

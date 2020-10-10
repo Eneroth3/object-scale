@@ -1,0 +1,105 @@
+@font-face {
+  font-family: "Open Sans";
+  src: url(OpenSans-Regular.ttf);
+}
+a:link {
+  color: #005595; /*Trimble blue*/
+}
+a:active, a:visited {
+  color: #C81719;
+}
+body {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857;
+  /* color: #727272; EM color */
+  color: #444; /* Increase contrast compared to EM to ease reading */
+  background: #F9F9FB;
+
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+.dlg-content-area {
+  flex: 1;
+  overflow: auto;
+  padding: 10px;
+  border-bottom: 1px solid #E2E1E1;
+}
+.dlg-commit-buttons {
+  flex: 0;
+  text-align: right;
+  padding: 10px;
+}
+.dlg-bar {
+  flex: 0;
+  padding: 10px;
+}
+.dlg-bar + .dlg-content-area,
+.dlg-bar + .dlg-commit-buttons,
+.dlg-bar + .dlg-bar{
+  border-top: 1px solid #E2E1E1;
+}
+::selection {
+  background: #005595; /*Trimble blue*/
+  color: white;
+}
+
+input[type=text],
+button,
+.dlg-button {
+  display: inline-block;
+  box-sizing: border-box;
+  height: 33px;
+  margin: 5px;
+  border-radius: 2px;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  border: 1px solid #CCC;
+  white-space: nowrap;
+  padding: 0;
+}
+input[type=text]:focus,
+button:focus,
+.dlg-button:focus {
+  box-shadow: 0 0 3px #005595; /*Trimble blue*/
+  outline: 0 !important;
+}
+button::-moz-focus-inner {
+  border-style: none;
+}
+button,
+.dlg-button {
+  width: 135px;
+  text-align: center;
+  cursor: pointer;
+  color: #333;
+  background: white;
+}
+button:not([disabled]):hover,
+.dlg-button:hover {
+  background: #E6E6E6;
+  border-color: #ADADAD;
+}
+.dlg-button-call-to-action:not([disabled]) {
+  background: #E72B2D;
+  color: white;
+  border-color: #DF191B;
+}
+.dlg-button-call-to-action:not([disabled]):hover {
+  background: #C81719;
+  border-color: #A81315;
+}
+input[type=text] {
+  background: white;
+  padding: 0.5em;
+}
+[disabled] {
+  -webkit-filter: grayscale(1);
+  filter: grayscale(1);
+  opacity: 0.5;
+  cursor: default;
+}

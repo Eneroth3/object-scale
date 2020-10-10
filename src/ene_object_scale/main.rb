@@ -2,6 +2,7 @@
 
 module Eneroth
   module ObjectScale
+    Sketchup.require "#{PLUGIN_ROOT}/frontend"
     Sketchup.require "#{PLUGIN_ROOT}/transformation"
 
     # Get scale from selected instances.
@@ -9,7 +10,7 @@ module Eneroth
     # @return [Float, nil]
     #  `nil` when instances have different scales.
     def self.scale
-      scales = selected_instance.map do |instance|
+      scales = selected_instances.map do |instance|
         Transformation.extract_scaling(instance.transformation, instance.definition.bounds)
       end
 
@@ -23,7 +24,7 @@ module Eneroth
     #
     # @param scale [Float]
     def self.scale=(scale)
-      selected_instance.each do |instance|
+      selected_instances.each do |instance|
         instance.transformation = Transformation.apply_scaling(instance.transformation, scale)
       end
     end
@@ -31,7 +32,7 @@ module Eneroth
     # Get instances (groups and components) selected in the model.
     #
     # @return [Array<Sketchup::Group, Sketchup::ComponentInstance>]
-    def self.selected_instance
+    def self.selected_instances
       Sketchup.active_model.selection.select do |entity|
         entity.is_a?(Sketchup::Group) || entity.is_a?(Sketchup::ComponentInstance)
       end
@@ -78,5 +79,7 @@ module Eneroth
 
       nil
     end
+
+    # TODO: Add menu
   end
 end
