@@ -80,6 +80,13 @@ module Eneroth
       nil
     end
 
-    # TODO: Add menu
+    unless @loaded
+      @loaded = true
+
+      cmd = UI::Command.new(EXTENSION.name) { Frontend.toggle }
+      cmd.set_validation_proc { Frontend.command_state }
+
+      UI.menu("Plugins").add_item(cmd)
+    end
   end
 end
